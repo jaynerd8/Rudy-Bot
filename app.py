@@ -13,11 +13,11 @@ app = Flask(__name__)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-	req = request.get_json(silent=True, force=True)
-	#res = processRequest(req)
-	#res = make_response(res)
-	speech = make_response({'fullfillmentText': 'HIHIHIHIHHI'})
-	return speech
+    speech: str
+    if request.get("result").get("action") == 'getRequisiteForPaper':
+        speech = make_response({'fullfillmentText': 'HIHIHIHIHHI'})
+
+    return speech
 
 
 def processRequest(req):
