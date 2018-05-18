@@ -1,9 +1,15 @@
-import os
-from flask import Flask
+#!/usr/bin/env python
 
+import os
+
+from flask import Flask
+from flask import request
+from flask import make_response
+
+# Flask app should start in global layout
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/webhook', methods=['POST'])
 def hello():
     return 'Hello World!'
 
