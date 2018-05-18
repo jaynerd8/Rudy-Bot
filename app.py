@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
-import json
 import os
+import json
 
-from flask import Flask
-from flask import jsonify
-from flask import request
+from flask import Flask, jsonify, request
 
 # Flask app should start in global layout
 app = Flask(__name__)
@@ -21,9 +19,23 @@ def webhook():
     print('Request from Dialogflow:')
     print(json.dumps(req, indent=4))
     response = base_response.copy()
-    print("aaaaaa")
     print(response)
+    processRequest(req)
     return jsonify(response)
+
+
+def processRequest(req):
+    if req.get("result").get("action") == 'getPaperRequisites':
+        getPaperRequisites(req)
+
+
+def getPaperRequisites(req):
+    result = req.get('result')
+    parameters = result.get('parameters')
+    paper = result.get('papers')
+    requisites = result.get('requisites')
+    print(paper)
+    print(requisites)
 
 
 if __name__ == '__main__':
