@@ -16,8 +16,9 @@ def webhook():
     print('Request from Dialogflow:')
     print(json.dumps(req, indent=4))
     print("aaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    res = request.post({'fulfillmentText': 'HIHI'})
-    print(res.json)
+    response = json.loads(request.getresponse().read().decode('utf-8'))
+    message = response['result']['fulfillment']['speech']
+    print(message)
     print("bbbb")
 
 
