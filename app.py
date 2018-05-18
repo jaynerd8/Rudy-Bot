@@ -16,7 +16,7 @@ def webhook():
     print('Request from Dialogflow:')
     print(json.dumps(req, indent=4))
     res = request.getresponse()
-    print(res.json({'fulfillmentText': 'Pre-requisite of '}))
+    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 
 
 if __name__ == '__main__':
