@@ -21,7 +21,7 @@ def webhook():
     response = base_response.copy()
     # print(response)
     # processRequest(req)
-    paper = req.body.queryResult.parameters['papers']
+    paper = req.queryResult.parameters['papers']
     return jsonify({'fulfillmentText': paper})
 
 
