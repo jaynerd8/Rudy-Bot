@@ -5,7 +5,6 @@ import json
 
 from flask import Flask
 from flask import request
-from flask import make_response
 
 # flask app should start in global layout
 app = Flask(__name__)
@@ -16,8 +15,8 @@ def webhook():
     req = request.get_json(silent=True, force=True)
     print('Request from Dialogflow:')
     print(json.dumps(req, indent=4))
-    res = make_response('Awesome')
-    return res
+    res = request.getresponse()
+    res.json({'fulfillmentText': 'Pre-requisite of '})
 
 
 if __name__ == '__main__':
