@@ -11,9 +11,8 @@ from flask import request
 app = Flask(__name__)
 
 base_response = {
-    'speech': "sample response",
-
-    'source': 'Manual'}
+    'fulfillmentText': "sample response",
+}
 
 
 @app.route('/webhook', methods=['POST'])
@@ -23,6 +22,7 @@ def webhook():
     print(json.dumps(req, indent=4))
     response = base_response.copy()
     print("aaaaaa")
+    print(response)
     return jsonify(response)
 
 
