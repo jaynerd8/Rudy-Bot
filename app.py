@@ -19,9 +19,10 @@ def webhook():
     print('Request from Dialogflow:')
     print(json.dumps(req, indent=4))
     response = base_response.copy()
-    print(response)
-    processRequest(req)
-    return jsonify(response)
+    # print(response)
+    # processRequest(req)
+    paper = request.body.queryResult.parameters['papers']
+    return jsonify({'fulfillmentText': paper})
 
 
 def processRequest(req):
