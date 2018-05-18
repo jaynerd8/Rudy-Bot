@@ -25,15 +25,16 @@ def webhook():
 
 
 def processRequest(req):
-    if req.get("result").get("action") == 'getPaperRequisites':
+    if req.body.queryResult.action() == 'getPaperRequisites':
+        print('WOW')
         getPaperRequisites(req)
 
 
 def getPaperRequisites(req):
-    result = req.get('result')
-    parameters = result.get('parameters')
-    paper = result.get('papers')
-    requisites = result.get('requisites')
+    result = req.get.queryResult()
+    parameters = result.parameters()
+    paper = parameters['papers']
+    requisites = parameters['requisites']
     print(paper)
     print(requisites)
 
