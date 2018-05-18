@@ -22,4 +22,4 @@ if __name__ == '__main__':
     # bind to port if defined, otherwise default to 5000
     port = int(os.getenv('PORT', 5000))
     print('Starting Rudy on port %d' % port)
-    app.run(debug=False, port=port, host='0,0,0,0')
+    app.run(port=port, host='0,0,0,0')
