@@ -13,18 +13,8 @@ app = Flask(__name__)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    speech: str
-    if request.get("result").get("action") == 'getRequisiteForPaper':
-        speech = make_response
 
-    return speech
-
-
-def processRequest(req):
-	result = req.get("result")
-	parameters = result.get("parameters")
-	paper = parameters.get("papers")
-	return paper
+    return None
 	
 if __name__ == '__main__':
     # bind to PORT if defined, otherwise default to 5000
