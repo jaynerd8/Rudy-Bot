@@ -21,9 +21,8 @@ def webhook():
     req = request.get_json(silent=True, force=True)
     print('Request from Dialogflow:')
     print(json.dumps(req, indent=4))
-    req_body = request.get_json()
-    print(req_body)
     response = base_response.copy()
+    print("aaaaaa")
     return jsonify(response)
 
 
