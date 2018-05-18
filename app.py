@@ -15,8 +15,6 @@ from flask import make_response
 
 # Flask app should start in global layout
 app = Flask(__name__)
-app.logger.addHandler(logging.StreamHandler(sys.stdout))
-app.logger.setLevel(logging.ERROR)
 
 
 @app.route('/webhook', methods=['POST'])
@@ -24,6 +22,7 @@ def webhook():
     req = request.get_json(silent=True, force=True)
     print('Request from Dialogflow:')
     print(json.dumps(req, indent=4))
+
     res = processRequest(req)
     res = json.dumps(res, indent=4)
     r = make_response(res)
@@ -32,8 +31,8 @@ def webhook():
 
 
 def processRequest(req):
-    if req.get("result").get("action") != "bookMyConference":
-        return {}
+    #if req.get("result").get("action") != "bookMyConference":
+    #    return {}
 
     # oauth
     orequest = req.get("originalRequest")  # work down the tree
@@ -63,6 +62,8 @@ def processRequest(req):
     data = result.json()
     print(data)
     res = makeWebhookResult(data)
+
+    print('BBBBBBBBBBBBBBBBBBBBBBBBBBB')
     return res
 
 
