@@ -25,7 +25,7 @@ def webhook():
 
 
 def processRequest(req):
-    if req.body.queryResult.action() == 'getPaperRequisites':
+    if req.body.queryResult.action == 'getPaperRequisites':
         print('WOW')
         getPaperRequisites(req)
 
