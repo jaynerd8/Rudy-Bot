@@ -36,8 +36,11 @@ def webhook():
                                     app.config.from_envvar('auth_provider_x509_cert_url'),
                                     app.config.from_envvar('client_x509_cert_url')})
 
-    default_app = firebase_admin.initialize_app(cred)
-    
+    admin = firebase_admin.initialize_app(cred)
+
+    degreesDatabase = admin.database().ref('/degrees')
+    print(degreesDatabase)
+
     # getting a request from rudy
     req = request.get_json(silent=True, force=True)
 
