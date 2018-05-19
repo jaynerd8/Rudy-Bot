@@ -36,7 +36,7 @@ def webhook():
                                     app.config.from_envvar('auth_provider_x509_cert_url'),
                                     app.config.from_envvar('client_x509_cert_url')})
 
-    admin = firebase_admin.initialize_app(cred)
+    #admin = firebase_admin.initialize_app(cred)
 
     #degreesDatabase = admin.database().ref('/degrees')
     #print(degreesDatabase)
