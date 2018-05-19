@@ -38,7 +38,7 @@ def webhook():
 
     admin = firebase_admin.initialize_app(cred)
 
-    degreesDatabase = admin.database().ref('/degrees')
+    #degreesDatabase = admin.database().ref('/degrees')
     #print(degreesDatabase)
 
     # getting a request from rudy
