@@ -3,34 +3,44 @@
 import os
 import json
 
+# flask will be used to interact with Rudy through a predefined webhook
+# jsonify for generating Rudy's response in json format
+# make_response will pass the text response from Rudy to clients
+# request will be client side's request (input) in json format
 from flask import Flask, jsonify, make_response, request
 
-# Flask app should start in global layout
 app = Flask(__name__)
 
-base_response = {
-    'fulfillmentText': 'sample response'
-}
 
-
+# the fulfillment webhook in Dialogflow should have an ending like=> /webhook
+# For example, if a heroku app has an url of sunnysideup.app, the whole
+# webhook url from Dialogflow to heroku should be sunnysideup.app/webhook
+# so a request should be routed to this webhook function directly
 @app.route('/webhook', methods=['POST'])
 def webhook():
+    # getting a request from rudy
     req = request.get_json(silent=True, force=True)
+
+    # print in json format
     print('Request from Dialogflow:')
     print(json.dumps(req, indent=4))
-    response = base_response.copy()
-    # print(response)
-    #processRequest(req)
-    #paper = req.get['queryResult']['parameters'].get('papers')
-    paper = req['queryResult']['parameters'].get('papers')
+
+    # process a request
+    res = process_request(req)
+
+    # paper = req.get['queryResult']['parameters'].get('papers')
+
     # paper = req.queryResult.parameters['papers']
-    return make_response(jsonify({'fulfillmentText': paper}))
+    return make_response(res)
 
 
-def processRequest(req):
-    if req.get('queryResult').get('action') == getPaperRequisites:
+def process_request(req):
+    if req['queryResult'].get('action') == 'getPaperRequisites':
+        paper = req['queryResult']['parameters'].get('paper')
         print('WOW')
-        #getPaperRequisites(req)
+    res = jsonify({'fulfillmentText': paper})
+    return res
+    # getPaperRequisites(req)
 
 
 def getPaperRequisites(req):
