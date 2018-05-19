@@ -2,6 +2,10 @@
 
 import os
 import json
+import firebase_admin
+
+from firebase_admin import credentials
+from flask import Flask, jsonify, make_response, request
 
 # Flask will be used to interact with Rudy through a predefined webhook.
 # 1. jsonify is for translating Rudy's response into an acceptable json
@@ -10,7 +14,6 @@ import json
 #    Dialogflow.
 # 3. request contains messages from client side request (input) in json
 #    format
-from flask import Flask, jsonify, make_response, request
 
 app = Flask(__name__)
 
@@ -22,15 +25,32 @@ app = Flask(__name__)
 # webhook function below.
 @app.route('/webhook', methods=['POST'])
 def webhook():
+    cred = credentials.Certificate({app.config.from_envvar('type'),
+                                    app.config.from_envvar('project_id'),
+                                    app.config.from_envvar('private_key_id'),
+                                    app.config.from_envvar('private_key'),
+                                    app.config.from_envvar('client_email'),
+                                    app.config.from_envvar('client_id'),
+                                    app.config.from_envvar('auth_uri'),
+                                    app.config.from_envvar('token_uri'),
+                                    app.config.from_envvar('auth_provider_x509_cert_url'),
+                                    app.config.from_envvar('client_x509_cert_url')})
+
+    default_app = firebase_admin.initialize_app(cred)
+    
     # getting a request from rudy
     req = request.get_json(silent=True, force=True)
 
     # print request in json format
-    print('Request from Dialogflow:')
+    print('Request from Client:')
     print(json.dumps(req, indent=4))
 
     # process a request
     res = process_request(req)
+
+    # print request in json format
+    print('Response from Rudy:')
+    print(json.dumps(res, indent=4))
 
     # return a text response to Rudy for the client request
     return make_response(res)
@@ -39,6 +59,7 @@ def webhook():
 # Forward client's request to an appropriate function based on the intent's
 # action type.
 def process_request(req):
+    print('Start processing.')
     res: object
     if req['queryResult'].get('action') == 'getPaperRequisites':
         res = get_paper_requisites(req)
