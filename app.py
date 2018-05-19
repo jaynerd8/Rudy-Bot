@@ -3,13 +3,13 @@
 import os
 import json
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, make_response, request
 
 # Flask app should start in global layout
 app = Flask(__name__)
 
 base_response = {
-    'fulfillmentText': "sample response",
+    'fulfillmentText': 'sample response'
 }
 
 
@@ -20,15 +20,16 @@ def webhook():
     print(json.dumps(req, indent=4))
     response = base_response.copy()
     # print(response)
-    # processRequest(req)
-    #paper = req.queryResult.parameters['papers']
-    return jsonify({'fulfillmentText': 'What the hell'})
+    processRequest(req)
+    paper = req.get['queryResult']['parameters'].get('papers')
+    # paper = req.queryResult.parameters['papers']
+    return make_response(jsonify({'fulfillmentText': paper}))
 
 
 def processRequest(req):
-    if req.body.queryResult.action('getPaperRequisites'):
+    if req.get('queryResult').get('action') == getPaperRequisites:
         print('WOW')
-        getPaperRequisites(req)
+        #getPaperRequisites(req)
 
 
 def getPaperRequisites(req):
