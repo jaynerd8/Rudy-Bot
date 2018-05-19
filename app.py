@@ -53,7 +53,7 @@ def webhook():
 
     # print request in json format
     print('Response from Rudy:')
-    print(json.dumps(res, indent=4))
+    #print(json.dumps(res, indent=4))
 
     # return a text response to Rudy for the client request
     return make_response(res)
