@@ -25,21 +25,21 @@ app = Flask(__name__)
 # webhook function below.
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    cred = credentials.Certificate({app.config.from_envvar('type'),
-                                    app.config.from_envvar('project_id'),
-                                    app.config.from_envvar('private_key_id'),
-                                    app.config.from_envvar('private_key'),
-                                    app.config.from_envvar('client_email'),
-                                    app.config.from_envvar('client_id'),
-                                    app.config.from_envvar('auth_uri'),
-                                    app.config.from_envvar('token_uri'),
-                                    app.config.from_envvar('auth_provider_x509_cert_url'),
-                                    app.config.from_envvar('client_x509_cert_url')})
-
-    #admin = firebase_admin.initialize_app(cred)
-
-    #degreesDatabase = admin.database().ref('/degrees')
-    #print(degreesDatabase)
+    # cred = credentials.Certificate({app.config.from_envvar('type'),
+    #                                 app.config.from_envvar('project_id'),
+    #                                 app.config.from_envvar('private_key_id'),
+    #                                 app.config.from_envvar('private_key'),
+    #                                 app.config.from_envvar('client_email'),
+    #                                 app.config.from_envvar('client_id'),
+    #                                 app.config.from_envvar('auth_uri'),
+    #                                 app.config.from_envvar('token_uri'),
+    #                                 app.config.from_envvar('auth_provider_x509_cert_url'),
+    #                                 app.config.from_envvar('client_x509_cert_url')})
+    #
+    # admin = firebase_admin.initialize_app(cred)
+    #
+    # degreesDatabase = admin.database().ref('/degrees')
+    # print(degreesDatabase)
 
     # getting a request from rudy
     req = request.get_json(silent=True, force=True)
