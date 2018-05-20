@@ -14,6 +14,7 @@ app = Flask(__name__)
 @app.route('/webhook', methods=['POST'])
 def webhook():
     key = authenticate()
+    print(key)
     key = json.dumps(key)
     print(key)
     cred = credentials.Certificate(key)
