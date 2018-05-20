@@ -44,7 +44,7 @@ def webhook():
     print('Response from Rudy:')
     print(res)
 
-    return make_response(jsonify({'fulfillmentText': 'hi'}))
+    return make_response(jsonify({'fulfillmentText': res}))
 
 
 def process_request(req):
@@ -68,7 +68,7 @@ def get_paper_requisites(req, db_requisites):
     requisites_query = make_requisites_query(db_requisites, paper, requisite, requisite1)
     if requisites_query is None:
         print('Requisites query is empty.')
-    res = {'fulfillmentText': requisites_query}
+    res = requisites_query
     print(res)
     return res
 
