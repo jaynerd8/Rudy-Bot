@@ -13,14 +13,16 @@ app = Flask(__name__)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    cred = credentials.Certificate(key=authenticate())
-    firebase = firebase_admin.initialize_app(cred, {'databaseURL': 'https://rudy-b5e54.firebaseio.com'})
+    key = authenticate()
+    print(key)
+    # cred = credentials.Certificate(key=authenticate())
+    # firebase = firebase_admin.initialize_app(cred, {'databaseURL': 'https://rudy-b5e54.firebaseio.com'})
 
     req = request.get_json(silent=True, force=True)
     print('Request from client:')
     print(json.dumps(req, indent=4))
 
-    print(db.reference('degrees').child('Bachelor of Applied Science').get())
+    # print(db.reference('degrees').child('Bachelor of Applied Science').get())
 
     return make_response(req)
 
