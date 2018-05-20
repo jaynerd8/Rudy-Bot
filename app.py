@@ -68,6 +68,7 @@ def get_paper_requisites(req, db_requisites):
     if requisites_query is None:
         print('Requisites query is empty.')
     res = jsonify({'fulfillmentText': requisites_query})
+    print(res)
     return res
 
 
