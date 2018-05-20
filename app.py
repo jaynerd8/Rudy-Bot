@@ -40,7 +40,7 @@ def webhook():
     print('Request from client:')
     print(json.dumps(req, indent=4))
 
-    res = process_request(req)
+    res = str(process_request(req))
     print('Response from Rudy:')
     print(res)
 
