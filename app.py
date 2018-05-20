@@ -15,9 +15,6 @@ app = Flask(__name__)
 @app.route('/webhook', methods=['POST'])
 def webhook():
     key = authenticate()
-    print(key)
-    key = json.dumps(key)
-    print(key)
     cred = credentials.Certificate(key)
     firebase_admin.initialize_app(cred, {'databaseURL': 'https://rudy-b5e54.firebaseio.com'})
 
@@ -36,7 +33,7 @@ def authenticate():
         "type": os.environ['type'],
         "project_id": os.environ['project_id'],
         "private_key_id": os.environ['private_key_id'],
-        "private_key": re.sub('\\n', '\n', os.environ['private_key']),
+        "private_key": os.environ['private_key'].replace('\\n', '\n'),
         "client_email": os.environ['client_email'],
         "client_id": os.environ['client_id'],
         "auth_uri": os.environ['auth_uri'],
