@@ -44,7 +44,7 @@ def webhook():
     print('Response from Rudy:')
     print(res)
 
-    return make_response(jsonify(res))
+    return make_response(jsonify({'fulfillmentText': 'hi'}))
 
 
 def process_request(req):
