@@ -11,6 +11,7 @@ from flask import Flask, jsonify, make_response, request
 
 app = Flask(__name__)
 db_url = {'databaseURL': 'https://rudy-b5e54.firebaseio.com'}
+db_requisites = db.reference('requisites')
 
 
 @app.route('/webhook', methods=['POST'])
@@ -23,10 +24,11 @@ def webhook():
     print('Request from client:')
     print(json.dumps(req, indent=4))
 
-    print(db.reference('degrees').child('Bachelor of Applied Science').get())
+    res = process_request(req)
+    print('Response from Rudy:')
+    print(res)
 
-
-# return make_response(req)
+    return make_response(res)
 
 
 def authenticate():
@@ -45,6 +47,55 @@ def authenticate():
     return key
 
 
+def process_request(req):
+    print('Started processing the received request.')
+    res: object
+    if req['queryResult'].get('action') == 'getPaperRequisites':
+        res = get_paper_requisites(req)
+    return res
+
+
+def get_paper_requisites(req):
+    res: object
+    paper = req['queryResult']['parameters'].get('paper')
+    requisite = req['queryResult']['parameters'].get('requisite')
+    requisite1: str
+    if req['queryResult']['parameters'].get('requisite1'):
+        requisite1 = req['queryResult']['parameters'].get('requisite1')
+    print('Requisites query created.')
+    requisites_query = make_requisites_query(paper, requisite, requisite1)
+    if requisites_query is None:
+        print('Requisites query is empty.')
+    res = jsonify({'fulfillmentText': requisites_query})
+    return res
+
+
+def make_requisites_query(paper, requisite, requisite1):
+    speech: str
+    requisite_result = db_requisites.child(paper).child(requisite).get()
+
+    if requisite_result is None:
+        print(requisite_result)
+        # requisite_result='No '+requisite+' are exist.'
+    else:
+        # requisite_result="The list of "+requisite+" are"+str(requisite_result)
+        print(requisite_result)
+
+    requisite1_result: str
+    if requisite1 is not None:
+        requisite1_result = db_requisites.child(paper).child(requisite1).get()
+        if requisite1_result is None:
+            print(requisite1_result)
+        else:
+            print(requisite1_result)
+
+    return requisite_result
+
+    #print(db.reference('degrees').child('Bachelor of Applied Science').get())
+
+
 if __name__ == '__main__':
+    # Set default PORT value as 5000, a pre-defined value can be used also.
     port = int(os.getenv('PORT', 5000))
-    app.run(debug=False, port=port, host='0.0.0.0')
+    print('Starting Rudy on port %d' % port)
+    app.run(debug=True, port=port, host='0.0.0.0')
