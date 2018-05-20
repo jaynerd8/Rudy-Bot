@@ -11,7 +11,6 @@ from flask import Flask, jsonify, make_response, request
 
 app = Flask(__name__)
 db_url = {'databaseURL': 'https://rudy-b5e54.firebaseio.com'}
-db_requisites: object
 
 
 @app.route('/webhook', methods=['POST'])
@@ -19,8 +18,6 @@ def webhook():
     key = authenticate()
     cred = credentials.Certificate(key)
     firebase_admin.initialize_app(cred, db_url)
-
-    db_requisites = db.reference('requisites')
 
     req = request.get_json(silent=True, force=True)
     print('Request from client:')
@@ -53,11 +50,12 @@ def process_request(req):
     print('Started processing the received request.')
     res: object
     if req['queryResult'].get('action') == 'getPaperRequisites':
-        res = get_paper_requisites(req)
+        db_requisites = db.reference('requisites')
+        res = get_paper_requisites(req, db_requisites)
     return res
 
 
-def get_paper_requisites(req):
+def get_paper_requisites(req, db_requisites):
     res: object
     paper = req['queryResult']['parameters'].get('paper')
     requisite = req['queryResult']['parameters'].get('requisite')
@@ -65,14 +63,14 @@ def get_paper_requisites(req):
     if req['queryResult']['parameters'].get('requisite1'):
         requisite1 = req['queryResult']['parameters'].get('requisite1')
     print('Requisites query created.')
-    requisites_query = make_requisites_query(paper, requisite, requisite1)
+    requisites_query = make_requisites_query(db_requisites, paper, requisite, requisite1)
     if requisites_query is None:
         print('Requisites query is empty.')
     res = jsonify({'fulfillmentText': requisites_query})
     return res
 
 
-def make_requisites_query(paper, requisite, requisite1):
+def make_requisites_query(db_requisites, paper, requisite, requisite1):
     speech: str
     requisite_result = db_requisites.child(paper).child(requisite).get()
 
