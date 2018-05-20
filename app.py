@@ -44,7 +44,7 @@ def webhook():
     print('Response from Rudy:')
     print(res)
 
-    return make_response(res)
+    return make_response(jsonify(res))
 
 
 def process_request(req):
@@ -67,7 +67,7 @@ def get_paper_requisites(req, db_requisites):
     requisites_query = make_requisites_query(db_requisites, paper, requisite, requisite1)
     if requisites_query is None:
         print('Requisites query is empty.')
-    res = jsonify({'fulfillmentText': requisites_query})
+    res = {'fulfillmentText': requisites_query}
     print(res)
     return res
 
@@ -83,13 +83,13 @@ def make_requisites_query(db_requisites, paper, requisite, requisite1):
         # requisite_result="The list of "+requisite+" are"+str(requisite_result)
         print(requisite_result)
 
-    requisite1_result: str
-    if requisite1 is not '':
-        requisite1_result = db_requisites.child(paper).child(requisite1).get()
-        if requisite1_result is None:
-            print(requisite1_result)
-        else:
-            print(requisite1_result)
+    # requisite1_result: str
+    # if requisite1 is not '':
+    #     requisite1_result = db_requisites.child(paper).child(requisite1).get()
+    #     if requisite1_result is None:
+    #         print(requisite1_result)
+    #     else:
+    #         print(requisite1_result)
 
     return requisite_result
 
