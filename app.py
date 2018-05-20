@@ -16,7 +16,7 @@ def webhook():
     req = request.get_json(silent=True, force=True)
     print('Request from client:')
     print(json.dumps(req, indent=4))
-    print(app.config.from_envvar('type'))
+    print(os.environ['type'])
     return make_response(req)
 
 
