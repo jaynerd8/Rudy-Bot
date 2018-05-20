@@ -12,6 +12,7 @@ from flask import Flask, jsonify, make_response, request
 app = Flask(__name__)
 db_url = {'databaseURL': 'https://rudy-b5e54.firebaseio.com'}
 
+
 def authenticate():
     key = {
         "type": os.environ['type'],
@@ -35,7 +36,6 @@ firebase_admin.initialize_app(cred, db_url)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-
     req = request.get_json(silent=True, force=True)
     print('Request from client:')
     print(json.dumps(req, indent=4))
@@ -53,6 +53,7 @@ def process_request(req):
     if req['queryResult'].get('action') == 'getPaperRequisites':
         db_requisites = db.reference('requisites')
         res = get_paper_requisites(req, db_requisites)
+    print(res)
     return res
 
 
