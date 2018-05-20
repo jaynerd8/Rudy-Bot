@@ -61,7 +61,7 @@ def get_paper_requisites(req):
     res: object
     paper = req['queryResult']['parameters'].get('paper')
     requisite = req['queryResult']['parameters'].get('requisite')
-    requisite1: str
+    requisite1 = ''
     if req['queryResult']['parameters'].get('requisite1'):
         requisite1 = req['queryResult']['parameters'].get('requisite1')
     print('Requisites query created.')
@@ -84,7 +84,7 @@ def make_requisites_query(paper, requisite, requisite1):
         print(requisite_result)
 
     requisite1_result: str
-    if requisite1 is not None:
+    if requisite1 is not '':
         requisite1_result = db_requisites.child(paper).child(requisite1).get()
         if requisite1_result is None:
             print(requisite1_result)
