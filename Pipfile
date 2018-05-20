@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 Flask = "==0.10.1"
 firebase-admin = "*"
+regex = "*"
 
 [dev-packages]
 
