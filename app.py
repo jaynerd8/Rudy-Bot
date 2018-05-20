@@ -14,6 +14,7 @@ app = Flask(__name__)
 @app.route('/webhook', methods=['POST'])
 def webhook():
     key = authenticate()
+    key = json.dumps(key)
     print(key)
     cred = credentials.Certificate(key)
     firebase_admin.initialize_app(cred, {'databaseURL': 'https://rudy-b5e54.firebaseio.com'})
