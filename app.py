@@ -12,24 +12,6 @@ from flask import Flask, jsonify, make_response, request
 app = Flask(__name__)
 db_url = {'databaseURL': 'https://rudy-b5e54.firebaseio.com'}
 
-
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    key = authenticate()
-    cred = credentials.Certificate(key)
-    firebase_admin.initialize_app(cred, db_url)
-
-    req = request.get_json(silent=True, force=True)
-    print('Request from client:')
-    print(json.dumps(req, indent=4))
-
-    res = process_request(req)
-    print('Response from Rudy:')
-    print(res)
-
-    return make_response(res)
-
-
 def authenticate():
     key = {
         "type": os.environ['type'],
@@ -44,6 +26,25 @@ def authenticate():
         "client_x509_cert_url": os.environ['client_x509_cert_url']}
 
     return key
+
+
+key = authenticate()
+cred = credentials.Certificate(key)
+firebase_admin.initialize_app(cred, db_url)
+
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+
+    req = request.get_json(silent=True, force=True)
+    print('Request from client:')
+    print(json.dumps(req, indent=4))
+
+    res = process_request(req)
+    print('Response from Rudy:')
+    print(res)
+
+    return make_response(res)
 
 
 def process_request(req):
