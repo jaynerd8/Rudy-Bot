@@ -10,13 +10,14 @@ from firebase_admin import db
 from flask import Flask, jsonify, make_response, request
 
 app = Flask(__name__)
+db_url = {'databaseURL': 'https://rudy-b5e54.firebaseio.com'}
 
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
     key = authenticate()
     cred = credentials.Certificate(key)
-    firebase_admin.initialize_app(cred, {'databaseURL': 'https://rudy-b5e54.firebaseio.com'})
+    firebase_admin.initialize_app(cred, db_url)
 
     req = request.get_json(silent=True, force=True)
     print('Request from client:')
