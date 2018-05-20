@@ -2,10 +2,10 @@
 
 import os
 import json
-#import firebase_admin
+import firebase_admin
 
-#from firebase_admin import credentials
-#from firebase_admin import db
+from firebase_admin import credentials
+from firebase_admin import db
 from flask import Flask, jsonify, make_response, request
 
 app = Flask(__name__)
@@ -22,4 +22,4 @@ def webhook():
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
-    app.run(debug=False, port=port, host='0,0,0,0')
+    app.run(debug=False, port=port, host='0.0.0.0')
