@@ -1,104 +1,74 @@
 #!/usr/bin/env python
 
+# Importing os to access core libraries of Heroku including secured
+# config vars.
 import os
-import re
+
+# Importing json to manage communication contents in the acceptable
+# json format.
 import json
+
+# Importing firebase_admin to authenticate server's Firebase database
+# access.
 import firebase_admin
 
+# credentials will be used to confirm identification of the service
+# key provided in Heroku's config vars.
 from firebase_admin import credentials
+
+# db will be the main database that Rudy will be accessing.
 from firebase_admin import db
+
+# Flask package will manage flow of communications between the server
+# and client.
+# 1. jsonify will be used for translating Rudy's response into
+# an acceptable json format.
+# 2. make_response will pass the text response
+# from Heroku app (Rudy) to client's Dialogflow view.
+# 3. request components contains json format messages from the client
+# side (input).
 from flask import Flask, jsonify, make_response, request
 
+# Starting flask app in global layout.
 app = Flask(__name__)
+
+# Database url (Firebase).
 db_url = {'databaseURL': 'https://rudy-b5e54.firebaseio.com'}
 
+# Secured service account key json from Heroku's config vars.
+key = {"type": os.environ['type'],
+       "project_id": os.environ['project_id'],
+       "private_key_id": os.environ['private_key_id'],
+       "private_key": os.environ['private_key'].replace('\\n', '\n'),
+       "client_email": os.environ['client_email'],
+       "client_id": os.environ['client_id'],
+       "auth_uri": os.environ['auth_uri'],
+       "token_uri": os.environ['token_uri'],
+       "auth_provider_x509_cert_url": os.environ['auth_provider_x509_cert_url'],
+       "client_x509_cert_url": os.environ['client_x509_cert_url']}
 
-def authenticate():
-    key = {
-        "type": os.environ['type'],
-        "project_id": os.environ['project_id'],
-        "private_key_id": os.environ['private_key_id'],
-        "private_key": os.environ['private_key'].replace('\\n', '\n'),
-        "client_email": os.environ['client_email'],
-        "client_id": os.environ['client_id'],
-        "auth_uri": os.environ['auth_uri'],
-        "token_uri": os.environ['token_uri'],
-        "auth_provider_x509_cert_url": os.environ['auth_provider_x509_cert_url'],
-        "client_x509_cert_url": os.environ['client_x509_cert_url']}
-
-    return key
-
-
-key = authenticate()
+# Authentication process into Firebase
+print('Rudy (Firebase): Connecting to Firebase.')
 cred = credentials.Certificate(key)
-firebase_admin.initialize_app(cred, db_url)
+firebase = firebase_admin.initialize_app(cred, db_url)
+print(firebase)
+print('Firebase access granted.')
+
+# Generating database references.
+db_requisites = db.reference('requisites')
 
 
-@app.route('/webhook', methods=['POST'])
+@app.route('webhook', methods=['POST'])
 def webhook():
+    # Get a request from client and print
     req = request.get_json(silent=True, force=True)
-    print('Request from client:')
+    print('Rudy (Flask):')
     print(json.dumps(req, indent=4))
-
-    res = str(process_request(req))
-    print('Response from Rudy:')
-    print(res)
-
-    return make_response(jsonify({'fulfillmentText': res}))
-
-
-def process_request(req):
-    print('Started processing the received request.')
-    res: object
-    if req['queryResult'].get('action') == 'getPaperRequisites':
-        db_requisites = db.reference('requisites')
-        res = get_paper_requisites(req, db_requisites)
-    print(res)
-    return res
-
-
-def get_paper_requisites(req, db_requisites):
-    res: object
-    paper = req['queryResult']['parameters'].get('paper')
-    requisite = req['queryResult']['parameters'].get('requisite')
-    requisite1 = ''
-    if req['queryResult']['parameters'].get('requisite1'):
-        requisite1 = req['queryResult']['parameters'].get('requisite1')
-    print('Requisites query created.')
-    requisites_query = make_requisites_query(db_requisites, paper, requisite, requisite1)
-    if requisites_query is None:
-        print('Requisites query is empty.')
-    res = requisites_query
-    print(res)
-    return res
-
-
-def make_requisites_query(db_requisites, paper, requisite, requisite1):
-    speech: str
-    requisite_result = db_requisites.child(paper).child(requisite).get()
-
-    if requisite_result is None:
-        print(requisite_result)
-        # requisite_result='No '+requisite+' are exist.'
-    else:
-        # requisite_result="The list of "+requisite+" are"+str(requisite_result)
-        print(requisite_result)
-
-    # requisite1_result: str
-    # if requisite1 is not '':
-    #     requisite1_result = db_requisites.child(paper).child(requisite1).get()
-    #     if requisite1_result is None:
-    #         print(requisite1_result)
-    #     else:
-    #         print(requisite1_result)
-
-    return requisite_result
-
-    # print(db.reference('degrees').child('Bachelor of Applied Science').get())
 
 
 if __name__ == '__main__':
-    # Set default PORT value as 5000, a pre-defined value can be used also.
+    # Setting the default port to 5000. Other defined values can be
+    # used as an alternative.
     port = int(os.getenv('PORT', 5000))
     print('Starting Rudy on port %d' % port)
     app.run(debug=True, port=port, host='0.0.0.0')
