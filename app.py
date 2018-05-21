@@ -116,10 +116,10 @@ def get_paper_requisites(req):
     for result in requisites_query:
         if result is None:
             print('Rudy (Firebase): Requisites query is empty.')
-            speech += 'There are no ' + requisites[counter] + ' for paper: ' + paper + '\n'
+            speech += 'There are no ' + requisites[counter] + ' for paper: ' + paper + ". "
         else:
             print('Rudy (Firebase): Parsing query results.')
-            speech += 'The list of ' + requisites[counter] + ' are: ' + str(result).strip('[]') + '<br>'
+            speech += 'The list of ' + requisites[counter] + ' are: ' + str(result).strip('[]') + ". "
         counter += 1
 
     # Returning the speech contexts.
