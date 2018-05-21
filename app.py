@@ -116,10 +116,10 @@ def get_paper_requisites(req):
     for result in requisites_query:
         if result is None:
             print('Rudy (Firebase): Requisites query is empty.')
-            speech += 'There are no ' + requisites[counter] + ' for paper: ' + paper
+            speech += 'There are no ' + requisites[counter] + ' for paper: ' + paper + '\n'
         else:
             print('Rudy (Firebase): Parsing query results.')
-            speech += 'The list of ' + requisites[counter] + ' are: ' + str(result).strip('[]')
+            speech += 'The list of ' + requisites[counter] + ' are: ' + str(result).strip('[]') + '\n'
         counter += 1
 
     # Returning the speech contexts.
@@ -133,9 +133,8 @@ def make_requisites_query(paper, requisites):
     # Making a list of query results for multiple requisite parameters.
     query_result = [db_requisites.child(paper).child(requisites[0]).get()]
 
-    print(requisites[1])
     # If client asks about two different types of requite parameters.
-    if requisites[1] is not None and requisites[0] is not requisites[1]:
+    if requisites[1] is not '' and requisites[0] is not requisites[1]:
         query_result.append(db_requisites.child(paper).child(requisites[1]).get())
 
     # Returning collected query results.
