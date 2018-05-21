@@ -104,9 +104,8 @@ def get_paper_requisites(req):
     # Getting parameters.
     speech = ''
     paper = req['queryResult']['parameters'].get('paper')
-    requisites = []
-    requisites.append(req['queryResult']['parameters'].get('requisite'))
-    requisites.append(req['queryResult']['parameters'].get('requisite1'))
+    requisites = [req['queryResult']['parameters'].get('requisite'),
+                  req['queryResult']['parameters'].get('requisite1')]
 
     # Query creation.
     print('Rudy (Heroku): Requisites query created.')
@@ -122,6 +121,7 @@ def get_paper_requisites(req):
             print('Rudy (Firebase): Parsing query results.')
             speech += 'The list of ' + requisites[counter] + ' are: ' + str(result).strip('[]')
         counter += 1
+
     # Returning the speech contexts.
     return speech
 
@@ -134,7 +134,7 @@ def make_requisites_query(paper, requisites):
     query_result = [db_requisites.child(paper).child(requisites[0]).get()]
 
     # If client asks about two different types of requite parameters.
-    if requisites[1] is not None & requisites[0] != requisites[1]:
+    if requisites[1] is not None & requisites[0] is not requisites[1]:
         query_result.append(db_requisites.child(paper).child(requisites[1]).get())
 
     # Returning collected query results.
