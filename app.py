@@ -99,31 +99,45 @@ def process_request(req):
 
 # Get required parameters from the request for a database query.
 def get_paper_requisites(req):
+    print('Rudy (Flask): Extracting required parameters.')
+
     # Getting parameters.
     speech = ''
     paper = req['queryResult']['parameters'].get('paper')
-    requisite = req['queryResult']['parameters'].get('requisite')
+    requisites = []
+    requisites.append(req['queryResult']['parameters'].get('requisite'))
+    requisites.append(req['queryResult']['parameters'].get('requisite1'))
 
     # Query creation.
     print('Rudy (Heroku): Requisites query created.')
-    requisites_query = make_requisites_query(paper, requisite)
+    requisites_query = make_requisites_query(paper, requisites)
 
     # Parsing query results into a speech format.
-    if requisites_query is None:
-        print('Rudy (Firebase): Requisites query is empty.')
-        speech += 'There are no ' + requisite + ' for paper: ' + paper
-    else:
-        print('Rudy (Firebase): Parsing query results.')
-        speech += 'The list of ' + requisite + ' are: ' + str(requisites_query).strip('[]')
-
+    counter = 0
+    for result in requisites_query:
+        if result is None:
+            print('Rudy (Firebase): Requisites query is empty.')
+            speech += 'There are no ' + requisites[counter] + ' for paper: ' + paper
+        else:
+            print('Rudy (Firebase): Parsing query results.')
+            speech += 'The list of ' + requisites[counter] + ' are: ' + str(result).strip('[]')
+        counter += 1
     # Returning the speech contexts.
     return speech
 
 
 # Get requisite data source from Firebase based on the request parameters.
-def make_requisites_query(paper, requisite):
+def make_requisites_query(paper, requisites):
     print('Rudy (Firebase): Accessing to the database.')
-    query_result = db_requisites.child(paper).child(requisite).get()
+
+    # Making a list of query results for multiple requisite parameters.
+    query_result = [db_requisites.child(paper).child(requisites[0]).get()]
+
+    # If client asks about two different types of requite parameters.
+    if requisites[1] is not None & requisites[0] != requisites[1]:
+        query_result.append(db_requisites.child(paper).child(requisites[1]).get())
+
+    # Returning collected query results.
     return query_result
 
 
