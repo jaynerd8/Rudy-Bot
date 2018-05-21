@@ -47,28 +47,55 @@ key = {"type": os.environ['type'],
        "auth_provider_x509_cert_url": os.environ['auth_provider_x509_cert_url'],
        "client_x509_cert_url": os.environ['client_x509_cert_url']}
 
-# Authentication process into Firebase
+# Authentication process into Firebase.
 print('Rudy (Firebase): Connecting to Firebase.')
 cred = credentials.Certificate(key)
 firebase = firebase_admin.initialize_app(cred, db_url)
 print(firebase)
-print('Firebase access granted.')
+print('Rudy (Firebase): Firebase access granted.')
 
 # Generating database references.
 db_requisites = db.reference('requisites')
 
 
+# The fulfillment webhook settings in Dialogflow should have a url
+# that ends with '/webhook'. For example, if an Heroku app has a url of
+# rudybot.app, the finalized Dialogflow's fulfillment webhook integration
+# address should be 'rudybot.app/webhook'. Upon generating a successful
+# server-client connection, the client request will be routed to the
+# webhook function below.
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    # Get a request from client and print
+    # Get a request from client then print.
     req = request.get_json(silent=True, force=True)
-    print('Rudy (Flask):')
+    print('Rudy (Flask): Request received ->')
     print(json.dumps(req, indent=4))
+
+    # Process the request to get a response.
+    res = process_request(req)
+    print('Rudy (Heroku): Generated response ->')
+    print(res)
+
+    # Returning acquired response in json format to the client's
+    # Dialogflow view.
+    return make_response(res)
+
+
+# Sorting out client's request then forward to a matching function based
+# on the action parameter of the request's intent.
+def process_request(req):
+    print('Rudy (Heroku): Request processing started.')
+
+    # Request sort process.
+    result: str
+    # if req['queryResult'].get('action') == 'getPaperRequisites':
+    #    res = get_paper_requisites(req)
+    return jsonify({'fulfillmentText': 'aaaaaaaaaaaaaaaaaa'})
 
 
 if __name__ == '__main__':
     # Setting the default port to 5000. Other defined values can be
     # used as an alternative.
     port = int(os.getenv('PORT', 5000))
-    print('Starting Rudy on port %d' % port)
+    print('Rudy (Heroku): Starting Rudy on port %d' % port)
     app.run(debug=True, port=port, host='0.0.0.0')
