@@ -119,7 +119,7 @@ def get_paper_requisites(req):
             speech += 'There are no ' + requisites[counter] + ' for paper: ' + paper + '\n'
         else:
             print('Rudy (Firebase): Parsing query results.')
-            speech += 'The list of ' + requisites[counter] + ' are: ' + str(result).strip('[]') + '\n'
+            speech += 'The list of ' + requisites[counter] + ' are: ' + str(result).strip('[]') + '<br>'
         counter += 1
 
     # Returning the speech contexts.
