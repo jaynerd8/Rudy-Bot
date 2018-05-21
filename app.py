@@ -86,13 +86,42 @@ def webhook():
 def process_request(req):
     print('Rudy (Heroku): Request processing started.')
 
-    # Request sort process.
+    # Request sorting process.
     result: str
-    # if req['queryResult'].get('action') == 'getPaperRequisites':
-    #    res = get_paper_requisites(req)
-    return jsonify({'fulfillmentText': 'aaaaaaaaaaaaaaaaaa'})
+    if req['queryResult'].get('action') == 'getPaperRequisites':
+        result = get_paper_requisites(req)
+    return jsonify({'fulfillmentText': result})
 
 
+# Get required parameters from the request for a database query.
+def get_paper_requisites(req):
+    # Getting parameters.
+    speech: str
+    paper = req['queryResult']['parameters'].get('paper')
+    requisite = req['queryResult']['parameters'].get('requisite')
+
+    # Query creation.
+    print('Rudy (Heroku): Requisites query created.')
+    requisites_query = make_requisites_query(paper, requisite)
+
+    # Parsing query results into a speech format.
+    if requisites_query is None:
+        print('Rudy (Firebase): Requisites query is empty.')
+        speech += 'There are no ' + requisite + ' for paper: ' + paper
+    else:
+        print('Rudy (Firebase): Parsing query results.')
+        speech += 'The list of ' + requisite + ' are: ' + str(requisites_query).strip('[]')
+
+    # Returning the speech contexts.
+    return speech
+
+
+def make_requisites_query(paper, requisite):
+    query_result = db_requisites.child(paper).child(requisite).get()
+    return query_result
+
+
+# Initializing app to server connection (hosting).
 if __name__ == '__main__':
     # Setting the default port to 5000. Other defined values can be
     # used as an alternative.
