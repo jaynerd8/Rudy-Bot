@@ -73,8 +73,6 @@ def webhook():
 
     # Process the request to get a response.
     res = process_request(req)
-    print('Rudy (Heroku): Generated response ->')
-    print(res)
 
     # Returning acquired response in json format to the client's
     # Dialogflow view.
@@ -90,6 +88,12 @@ def process_request(req):
     result: str
     if req['queryResult'].get('action') == 'getPaperRequisites':
         result = get_paper_requisites(req)
+
+    # Show the response log before jsonify.
+    print('Rudy (Heroku): Generated response ->')
+    print(result)
+
+    # Returning the result in the acceptable json format.
     return jsonify({'fulfillmentText': result})
 
 
@@ -123,7 +127,7 @@ def make_requisites_query(paper, requisite):
     return query_result
 
 
-# Initializing app to server connection (hosting).
+# Initializing the app to server connection (hosting).
 if __name__ == '__main__':
     # Setting the default port to 5000. Other defined values can be
     # used as an alternative.
