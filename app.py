@@ -96,7 +96,7 @@ def process_request(req):
 # Get required parameters from the request for a database query.
 def get_paper_requisites(req):
     # Getting parameters.
-    speech: str
+    speech = ''
     paper = req['queryResult']['parameters'].get('paper')
     requisite = req['queryResult']['parameters'].get('requisite')
 
@@ -116,7 +116,9 @@ def get_paper_requisites(req):
     return speech
 
 
+# Get requisite data source from Firebase based on the request parameters.
 def make_requisites_query(paper, requisite):
+    print('Rudy (Firebase): Accessing to the database.')
     query_result = db_requisites.child(paper).child(requisite).get()
     return query_result
 
