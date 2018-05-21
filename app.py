@@ -58,7 +58,7 @@ print('Firebase access granted.')
 db_requisites = db.reference('requisites')
 
 
-@app.route('webhook', methods=['POST'])
+@app.route('/webhook', methods=['POST'])
 def webhook():
     # Get a request from client and print
     req = request.get_json(silent=True, force=True)
