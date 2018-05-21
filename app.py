@@ -133,10 +133,10 @@ def make_requisites_query(paper, requisites):
     # Making a list of query results for multiple requisite parameters.
     query_result = [db_requisites.child(paper).child(requisites[0]).get()]
 
+    print(requisites[1])
     # If client asks about two different types of requite parameters.
-    if requisites[1] is not None:
-        if requisites[0] is not requisites[1]:
-            query_result.append(db_requisites.child(paper).child(requisites[1]).get())
+    if requisites[1] is not None and requisites[0] is not requisites[1]:
+        query_result.append(db_requisites.child(paper).child(requisites[1]).get())
 
     # Returning collected query results.
     return query_result
