@@ -159,12 +159,12 @@ def get_major_details(req):
     for result in details_query:
         if result is None:
             print('Rudy (Firebase): Major details query is empty.')
-            speech += 'There are no Year ' + counter + ' courses for ' + major \
-                      + ' major. '
+            speech += 'There are no Year ' + str(counter) + ' courses for ' \
+                      + major + ' major. '
         else:
             print('Rudy (Firebase): Parsing query results.')
-            speech += 'The list of suggested courses for Year ' + counter + ' are: ' \
-                      + str(result).strip('[]') + '. '
+            speech += 'The list of suggested courses for Year ' + str(counter) \
+                      + ' are: ' + str(result).strip('[]') + '. '
         counter += 1
 
     # Returning the speech contexts.
