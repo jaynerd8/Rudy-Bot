@@ -196,11 +196,9 @@ def make_details_query(major):
     print('Rudy (Firebase): Accessing to the database.')
 
     # Making a list of query results for multiple year details for the major.
-    query_result = []
-    first_year = [db_majors.child(major).child('Year1').get()]
-    second_year = [db_majors.child(major).child('Year2').get()]
-    third_year = [db_majors.child(major).child('Year3').get()]
-    query_result.append(first_year, second_year, third_year)
+    query_result = [[db_majors.child(major).child('Year 1').get()],
+                    [db_majors.child(major).child('Year 2').get()],
+                    [db_majors.child(major).child('Year 3').get()]]
 
     # Returning collected query results.
     return query_result
