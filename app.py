@@ -86,3 +86,9 @@ def make_requisites_query(paper, requisites):
         query_result.append(db_requisites.child(paper).child(requisites[1]).get())
 
     return query_result
+
+
+if __name__ == '__main__':
+    port = int(os.getenv('PORT', 5000))
+    print('Rudy: Starting Rudy on port %d' % port)
+    app.run(debug=True, port=port, host='0.0.0.0')
