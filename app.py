@@ -44,7 +44,8 @@ def process_request(req):
     result: str
     if req['queryResult'].get('action') == 'getPaperRequisites':
         result = get_paper_requisites(req)
-
+    if req['queryResult'].get('action') == 'getFailureDetails':
+        result = get_failure_details(req)
     print('Rudy: Generated response ->')
     print(result)
 
@@ -77,6 +78,28 @@ def get_paper_requisites(req):
     return speech
 
 
+def get_failure_details(req):
+    print('Rudy: Extracting required parameters.')
+
+    speech = ''
+    paper = req['queryResult']['parameters'].get('paper')
+
+    print('Rudy: failure details query created.')
+    failure_details_query = make_failure_details_query(paper)
+
+    for result in failure_details_query:
+        if result is None:
+            print('Rudy: Requisites query is empty.')
+            speech += 'There are no restrictions for paper: ' \
+                      + paper + '. ' + 'You can still take whatever you want. '
+        else:
+            print('Rudy: Parsing query results.')
+            speech += 'Other than ' + str(result).strip('[]') + ', ' \
+                      + 'you can freely choose next courses'
+
+    return speech
+
+
 def make_requisites_query(paper, requisites):
     print('Rudy: Accessing to the database.')
 
@@ -84,6 +107,14 @@ def make_requisites_query(paper, requisites):
 
     if requisites[1] is not '' and requisites[0] is not requisites[1]:
         query_result.append(db_requisites.child(paper).child(requisites[1]).get())
+
+    return query_result
+
+
+def make_failure_details_query(paper, requisites):
+    print('Rudy: Accessing to the database.')
+
+    query_result = [db_requisites.child(paper).child('next').get()]
 
     return query_result
 
