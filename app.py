@@ -28,6 +28,7 @@ firebase = firebase_admin.initialize_app(cred, db_url)
 print('Rudy: Firebase access granted.')
 
 db_requisites = db.reference('requisites')
+db_majors = db.reference('majors')
 
 
 @app.route('/webhook', methods=['POST'])
@@ -44,8 +45,10 @@ def process_request(req):
     result: str
     if req['queryResult'].get('action') == 'getPaperRequisites':
         result = get_paper_requisites(req)
-    if req['queryResult'].get('action') == 'getFailureDetails':
+    elif req['queryResult'].get('action') == 'getFailureDetails':
         result = get_failure_details(req)
+    elif req['queryResult'].get('action') == 'getMajorDetails':
+        result = get_major_details(req)
     print('Rudy: Generated response ->')
     print(result)
 
@@ -116,6 +119,47 @@ def make_failure_details_query(paper):
 
     query_result = [db_requisites.child(paper).child('next').get()]
 
+    return query_result
+
+
+# Get required parameters (majors) from the request for a database query.
+def get_major_details(req):
+    print('Rudy (Flask): Extracting required parameters. (majors)')
+
+    # Getting parameters.
+    speech = ''
+    major = req['queryResult']['parameters'].get('major')
+    year = req['queryResult']['parameters'].get('year')
+
+    # Query creation.
+    print('Rudy (Heroku): Major details query created.')
+    details_query = make_details_query(major, year)
+
+    # Parsing query results into a speech format.
+    counter = 1
+    for result in details_query:
+        if result is None:
+            print('Rudy (Firebase): Major details query is empty.')
+            speech += 'There are no ' + year + ' courses for ' \
+                      + major + ' major. '
+        else:
+            print('Rudy (Firebase): Parsing query results.')
+            speech += 'The list of suggested courses for' + year \
+                      + ' are: ' + (str(result).strip('[]')).strip('{}') + '. '
+        counter += 1
+
+    # Returning the speech contexts.
+    return speech
+
+
+# Get major details data source from Firebase based on the request parameters.
+def make_details_query(major, year):
+    print('Rudy (Firebase): Accessing to the database.')
+
+    # Making a list of query results for multiple year details for the major.
+    query_result = [db_majors.child(major).child(year).get()]
+
+    # Returning collected query results.
     return query_result
 
 
