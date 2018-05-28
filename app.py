@@ -111,7 +111,7 @@ def make_requisites_query(paper, requisites):
     return query_result
 
 
-def make_failure_details_query(paper, requisites):
+def make_failure_details_query(paper):
     print('Rudy: Accessing to the database.')
 
     query_result = [db_requisites.child(paper).child('next').get()]
