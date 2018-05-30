@@ -104,6 +104,8 @@ def process_request(req):
         result = get_major_details(req)
     elif req['queryResult'].get('action') == 'getMajorList':
         result = get_major_list()
+    elif req['queryResult'].get('action') == 'getAvailability':
+        result = get_major_list()
 
     # Showing the generated response.
     print('Rudy: Generated response ->')
@@ -295,7 +297,54 @@ def make_failure_details_query(paper):
 # ---------------------------END_REGION FAILURE_DETAILS---------------------------- #
 
 
+# -------------------------------REGION AVAILABILITY------------------------------- #
+
+
+# Get required parameters (papers & years) from the request for a database
+# query.
+def get_availability(req):
+    print('Rudy: Extracting paper & requisite parameters.')
+
+    # Getting paper and year parameters.
+    speech = ''
+    paper = req['queryResult']['parameters'].get('paper')
+    year = req['queryResult']['parameters'].get('year')
+
+    # Creating query.
+    print('Rudy: Availability query created.')
+    availability_query = make_requisites_query(paper, year)
+
+    # Parsing query results into a speech format.
+    if availability_query is None:
+        print('Rudy: Availability query is empty.')
+        speech += 'The paper you are asking is not available in ' + year + '. '
+    else:
+        print('Rudy: Parsing query results.')
+        speech += 'In ' + year + ', ' + paper + ' is available for ' \
+                  + str(availability_query).strip('[]') + '. '
+
+    # Returning the speech context.
+    return speech
+
+
+# Get availability data source from Firebase based on the requested parameters.
+def make_availability_query(paper, year):
+    print('Rudy: Accessing to the database.')
+
+    # Making a list of query results for paper and year parameters.
+    query_result = db_requisites.child(paper).child('availability').child(year).get()
+
+    # Returning collected query results.
+    return query_result
+
+
+# -----------------------------END_REGION AVAILABILITY----------------------------- #
+
+
+# Initializing the app to server connection (hosting).
 if __name__ == '__main__':
+    # Setting the default port to 5000. Other defined values can be used as an
+    # alternative.
     port = int(os.getenv('PORT', 5000))
     print('Rudy: Starting Rudy on port %d' % port)
     app.run(debug=True, port=port, host='0.0.0.0')
