@@ -1,14 +1,45 @@
 #!/usr/bin/env python
+
+
+# ----------------------------------REGION IMPORT---------------------------------- #
+
+
+# Importing os to access core libraries of Heroku including secured config vars.
 import os
+
+# Importing json to manage communication contents in the acceptable json format.
 import json
+
+# Importing firebase_admin to authenticate server's Firebase access.
 import firebase_admin
 
+# Credentials will be used to confirm identification of the service key provided in
+# Heroku's config vars.
+# db will be the main database that Rudy will be accessing.
 from firebase_admin import credentials, db
+
+# Flask package will manage flow of communications between the server and client.
+# 1. jsonify will be used for translating Rudy's response into an acceptable json
+# format.
+# 2. make_response will pass the text response from Heroku app (Rudy) to client's
+# Dialogflow view.
+# 3. request components contains json format messages from the client side (input).
 from flask import Flask, jsonify, make_response, request
+
+# --------------------------------END_REGION IMPORT-------------------------------- #
+
+
+# ----------------------------------REGION GLOBAL---------------------------------- #
+
 
 # Starting the flask application in global layout.
 app = Flask(__name__)
+
+# Database url (Firebase).
 db_url = {'databaseURL': 'https://rudy-b5e54.firebaseio.com'}
+
+# Secured service account key in json format. Will be referred from Heroku's preset
+# config vars.
 key = {"type": os.environ['type'],
        "project_id": os.environ['project_id'],
        "private_key_id": os.environ['private_key_id'],
@@ -20,27 +51,47 @@ key = {"type": os.environ['type'],
        "auth_provider_x509_cert_url": os.environ['auth_provider_x509_cert_url'],
        "client_x509_cert_url": os.environ['client_x509_cert_url']}
 
+# Authentication process into Firebase.
 print('Rudy: Connecting to Firebase.')
-
 cred = credentials.Certificate(key)
 firebase = firebase_admin.initialize_app(cred, db_url)
-
 print('Rudy: Firebase access granted.')
 
+# Instantiating database references.
 db_requisites = db.reference('requisites')
 db_majors = db.reference('majors')
+db_jobs = db.reference('jobs')
 
 
+# --------------------------------END_REGION GLOBAL-------------------------------- #
+
+
+# ---------------------------------REGION WEBHOOK---------------------------------- #
+
+
+# The fulfillment webhook settings in Dialogflow should have a url that ends with
+# '/webhook'. For example, if an Heroku app has a url of rudybot.app, the finalized
+# Dialogflow's webhook integration address should be 'rudybot.app/webhook'. Upon
+# generating a successful server-client connection, the client request will be rout
+# -ed to the webhook function below.
 @app.route('/webhook', methods=['POST'])
 def webhook():
+    # Getting the request from client then print.
     req = request.get_json(silent=True, force=True)
     print('Rudy: Request received ->')
     print(json.dumps(req, indent=4))
+
+    # Process the request to generate a response.
     res = process_request(req)
+
+    # Returning generated response in json format to the client's Dialogflow view.s
     return make_response(res)
 
 
+# Sorting out client's request then forward to a matching function based on the
+# action parameter of the request's intent.
 def process_request(req):
+    # Starting request sorting process.
     print('Rudy: Request processing started.')
     result: str
     if req['queryResult'].get('action') == 'getPaperRequisites':
@@ -49,10 +100,16 @@ def process_request(req):
         result = get_failure_details(req)
     elif req['queryResult'].get('action') == 'getMajorDetails':
         result = get_major_details(req)
+
+    # Showing the generated response.
     print('Rudy: Generated response ->')
     print(result)
 
+    # Returning the result in the acceptable json format.
     return jsonify({'fulfillmentText': result})
+
+
+# -------------------------------END_REGION WEBHOOK-------------------------------- #
 
 
 def get_paper_requisites(req):
@@ -144,7 +201,7 @@ def get_major_details(req):
                       + major + ' major. '
         else:
             print('Rudy (Firebase): Parsing query results.')
-            speech += 'The list of suggested courses for' + year \
+            speech += 'The list of suggested courses \n for ' + year \
                       + ' are: ' + (str(result).strip('[]')).strip('{}') + '. '
         counter += 1
 
