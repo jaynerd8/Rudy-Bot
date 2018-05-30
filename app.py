@@ -106,6 +106,8 @@ def process_request(req):
         result = get_major_list()
     elif req['queryResult'].get('action') == 'getAvailability':
         result = get_availability(req)
+    elif req['queryResult'].get('action') == 'getJobDetails':
+        result = get_job_details(req)
 
     # Showing the generated response.
     print('Rudy: Generated response ->')
@@ -339,6 +341,49 @@ def make_availability_query(paper, year):
 
 
 # -----------------------------END_REGION AVAILABILITY----------------------------- #
+
+
+# -------------------------------REGION JOB_DETAILS-------------------------------- #
+
+
+# Get required parameters (majors & jobs) from the request for a database query.
+def get_job_details(req):
+    print('Rudy : Extracting major parameters. (jobs)')
+
+    # Getting parameters.
+    speech = ''
+    job = req['queryResult']['parameters'].get('job')
+
+    # Query creation.
+    print('Rudy: Job details query created.')
+    job_details_query = make_job_details_query(job)
+
+    # Parsing query results into a speech format.
+    if job_details_query is None:
+        print('Rudy: Job details query is empty.')
+        speech += 'There are no suitable papers for ' + job + '. '
+    else:
+        print('Rudy: Parsing query results.')
+        speech += 'The list of suitable paper plans for ' + job \
+                  + ' are ' + str(job_details_query).strip('{}') + '. '
+
+    # Returning the speech contexts.
+    return speech
+
+
+# Get job details data source from Firebase based on the request parameters.
+def make_job_details_query(job):
+    print('Rudy: Accessing to the database.')
+
+    # Making a list of query results for the specific job's details.
+    job_query_result = str(db_jobs.child(job).child('major').get()).strip('""')
+    paper_query_result = str(db_majors.child(job_query_result).get()).strip('[]')
+
+    # Returning collected query results.
+    return paper_query_result
+
+
+# -----------------------------END_REGION JOB_DETAILS------------------------------ #
 
 
 # Initializing the app to server connection (hosting).
