@@ -200,7 +200,7 @@ def make_major_details_query(major, year):
     print('Rudy: Accessing to the database.')
 
     # Making a list of query results for the specific year's major details.
-    query_result = [db_majors.child(major).child(year).get()]
+    query_result = str(db_majors.child(major).child(year).get()).strip('{}')
 
     # Returning collected query results.
     return query_result
