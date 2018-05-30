@@ -411,7 +411,7 @@ def get_next_paper_details(req):
     else:
         print('Rudy: Parsing query results.')
         speech += 'Once you finish ' + paper + ', you can take ' \
-                  + str(next_paper_details_query).strip('[]') + ' for you next papers in' \
+                  + str(next_paper_details_query).strip('[]') + ' for your next papers in ' \
                   + major + ' major.'
 
     # Returning speed context.
