@@ -312,7 +312,7 @@ def get_availability(req):
 
     # Creating query.
     print('Rudy: Availability query created.')
-    availability_query = make_requisites_query(paper, year)
+    availability_query = make_availability_query(paper, year)
 
     # Parsing query results into a speech format.
     if availability_query is None:
