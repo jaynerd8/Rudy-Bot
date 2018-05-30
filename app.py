@@ -61,6 +61,7 @@ print('Rudy: Firebase access granted.')
 db_requisites = db.reference('requisites')
 db_majors = db.reference('majors')
 db_jobs = db.reference('jobs')
+db_major_list = db.reference('major-list')
 
 
 # --------------------------------END_REGION GLOBAL-------------------------------- #
@@ -101,6 +102,8 @@ def process_request(req):
         result = get_failure_details(req)
     elif req['queryResult'].get('action') == 'getMajorDetails':
         result = get_major_details(req)
+    elif req['queryResult'].get('action') == 'getMajorList':
+        result = get_major_list()
 
     # Showing the generated response.
     print('Rudy: Generated response ->')
@@ -201,12 +204,51 @@ def make_major_details_query(major, year):
 
     # Making a list of query results for the specific year's major details.
     query_result = str(db_majors.child(major).child(year).get()).strip('[]')
-    
+
     # Returning collected query results.
     return query_result
 
 
 # ----------------------------END_REGION MAJOR_DETAILS----------------------------- #
+
+
+# -------------------------------REGION MAJOR_LIST--------------------------------- #
+
+
+# Get list of majors in BCIS, so the client can choose one of the options.
+def get_major_list():
+    print('Rudy: Processing major list query request')
+
+    # Query creation.
+    speech = ''
+    print('Rudy: Major list query created.')
+    major_list_query = make_major_list_query()
+
+    # Parsing query results into a speech format.
+    if major_list_query is None:
+        print('Rudy: Major list query is empty.')
+        speech += 'There are no majors you can choose for now.'
+    else:
+        print('Rudy: Parsing query results.')
+        speech += 'The majors offered in the BCIS department are: ' \
+                  + str(major_list_query).strip('[]') + '.'
+
+    # Returning speech context.
+    return speech
+
+
+# Get major list information from Firebase.
+def make_major_list_query():
+    print('Rudy: Accessing to the database.')
+
+    # Making a query result for the major list.
+    query_result = [db_major_list.get()]
+
+    # Returning collected query results.
+    return query_result
+
+
+# -----------------------------END_REGION MAJOR_LIST------------------------------- #
 
 
 def get_failure_details(req):
