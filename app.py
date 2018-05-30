@@ -189,7 +189,7 @@ def get_major_details(req):
     else:
         print('Rudy: Parsing query results.')
         speech += 'The list of suggested courses for ' + year \
-                  + ' are ' + str(major_details_query) + '. '
+                  + ' are ' + str(major_details_query).strip('{}') + '. '
 
     # Returning the speech contexts.
     return speech
@@ -200,8 +200,8 @@ def make_major_details_query(major, year):
     print('Rudy: Accessing to the database.')
 
     # Making a list of query results for the specific year's major details.
-    query_result = str(db_majors.child(major).child(year).get()).strip('{}')
-
+    query_result = str(db_majors.child(major).child(year).get()).strip('[]')
+    
     # Returning collected query results.
     return query_result
 
