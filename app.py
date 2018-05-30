@@ -251,34 +251,48 @@ def make_major_list_query():
 # -----------------------------END_REGION MAJOR_LIST------------------------------- #
 
 
+# -----------------------------REGION FAILURE_DETAILS------------------------------ #
+
+
+# Get restriction details for a paper. Therefore the client can find out what cannot
+# be taken once failed.
 def get_failure_details(req):
     print('Rudy: Extracting required parameters.')
 
+    # Getting the request, and extracting parameters.
     speech = ''
     paper = req['queryResult']['parameters'].get('paper')
 
+    # Query creation.
     print('Rudy: failure details query created.')
     failure_details_query = make_failure_details_query(paper)
 
-    for result in failure_details_query:
-        if result is None:
-            print('Rudy: Requisites query is empty.')
-            speech += 'There are no restrictions for paper: ' \
-                      + paper + '. ' + 'You can still take whatever you want. '
-        else:
-            print('Rudy: Parsing query results.')
-            speech += 'Other than ' + str(result).strip('[]') + ', ' \
-                      + 'you can freely choose next courses'
+    # Parsing the query result into a speech format.
+    if failure_details_query is None:
+        print('Rudy: failure details query is empty.')
+        speech += 'There are basically no restrictions for paper: ' \
+                  + paper + '. ' + 'You can still take whatever you want. '
+    else:
+        print('Rudy: Parsing query results.')
+        speech += 'Other than ' + str(failure_details_query).strip('[]') + ', ' \
+                  + 'you can freely choose your next courses'
 
+    # Returning speed context.
     return speech
 
 
+# Get failure information from Firebase.
 def make_failure_details_query(paper):
     print('Rudy: Accessing to the database.')
 
-    query_result = [db_requisites.child(paper).child('next').get()]
+    # Get restriction details for the paper.
+    query_result = [db_requisites.child(paper).child('restriction').get()]
 
+    # Returning collected result.
     return query_result
+
+
+# ---------------------------END_REGION FAILURE_DETAILS---------------------------- #
 
 
 if __name__ == '__main__':
