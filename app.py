@@ -91,8 +91,9 @@ def webhook():
 # Sorting out client's request then forward to a matching function based on the
 # action parameter of the request's intent.
 def process_request(req):
-    # Starting request sorting process.
     print('Rudy: Request processing started.')
+
+    # Starting request sorting process.
     result: str
     if req['queryResult'].get('action') == 'getPaperRequisites':
         result = get_paper_requisites(req)
@@ -112,30 +113,100 @@ def process_request(req):
 # -------------------------------END_REGION WEBHOOK-------------------------------- #
 
 
-def get_paper_requisites(req):
-    print('Rudy: Extracting required parameters.')
+# --------------------------------REGION REQUISITES-------------------------------- #
 
+
+# Get required parameters (papers & requirements) from the request for a database
+# query.
+def get_paper_requisites(req):
+    print('Rudy: Extracting paper & requisite parameters.')
+
+    # Getting paper and requisite parameters.
     speech = ''
     paper = req['queryResult']['parameters'].get('paper')
     requisites = [req['queryResult']['parameters'].get('requisite'),
                   req['queryResult']['parameters'].get('requisite1')]
 
+    # Creating query.
     print('Rudy: Requisites query created.')
     requisites_query = make_requisites_query(paper, requisites)
 
+    # Parsing query results into a speech format.
     counter = 0
     for result in requisites_query:
         if result is None:
             print('Rudy: Requisites query is empty.')
-            speech += 'There are no ' + requisites[counter] + ' for paper: ' \
+            speech += 'There are no ' + requisites[counter] + ' for paper ' \
                       + paper + '. '
         else:
             print('Rudy: Parsing query results.')
-            speech += 'The list of ' + requisites[counter] + ' are: ' \
+            speech += 'Here is the list of ' + requisites[counter] + '. ' \
                       + str(result).strip('[]') + '. '
         counter += 1
 
+    # Returning the speech context.
     return speech
+
+
+# Get requisite data source from Firebase based on the requested parameters.
+def make_requisites_query(paper, requisites):
+    print('Rudy: Accessing to the database.')
+
+    # Making a list of query results for multiple requisite parameters.
+    query_result = [db_requisites.child(paper).child(requisites[0]).get()]
+
+    # If client asks about two different types of requisite parameters.
+    if requisites[1] is not '' and requisites[0] is not requisites[1]:
+        query_result.append(db_requisites.child(paper).child(requisites[1]).get())
+
+    # Returning collected query results.
+    return query_result
+
+
+# ------------------------------END_REGION REQUISITES------------------------------ #
+
+
+# ------------------------------REGION MAJOR_DETAILS------------------------------- #
+
+
+# Get required parameters (majors) from the request for a database query.
+def get_major_details(req):
+    print('Rudy : Extracting major parameters. (majors)')
+
+    # Getting parameters.
+    speech = ''
+    major = req['queryResult']['parameters'].get('major')
+    year = req['queryResult']['parameters'].get('year')
+
+    # Query creation.
+    print('Rudy: Major details query created.')
+    major_details_query = make_major_details_query(major, year)
+
+    # Parsing query results into a speech format.
+    if major_details_query is None:
+        print('Rudy: Major details query is empty.')
+        speech += 'There are no ' + year + ' courses for ' + major + ' major. '
+    else:
+        print('Rudy: Parsing query results.')
+        speech += 'The list of suggested courses for ' + year \
+                  + ' are ' + str(major_details_query) + '. '
+
+    # Returning the speech contexts.
+    return speech
+
+
+# Get major details data source from Firebase based on the request parameters.
+def make_major_details_query(major, year):
+    print('Rudy: Accessing to the database.')
+
+    # Making a list of query results for the specific year's major details.
+    query_result = [db_majors.child(major).child(year).get()]
+
+    # Returning collected query results.
+    return query_result
+
+
+# ----------------------------END_REGION MAJOR_DETAILS----------------------------- #
 
 
 def get_failure_details(req):
@@ -160,63 +231,11 @@ def get_failure_details(req):
     return speech
 
 
-def make_requisites_query(paper, requisites):
-    print('Rudy: Accessing to the database.')
-
-    query_result = [db_requisites.child(paper).child(requisites[0]).get()]
-
-    if requisites[1] is not '' and requisites[0] is not requisites[1]:
-        query_result.append(db_requisites.child(paper).child(requisites[1]).get())
-
-    return query_result
-
-
 def make_failure_details_query(paper):
     print('Rudy: Accessing to the database.')
 
     query_result = [db_requisites.child(paper).child('next').get()]
 
-    return query_result
-
-
-# Get required parameters (majors) from the request for a database query.
-def get_major_details(req):
-    print('Rudy (Flask): Extracting required parameters. (majors)')
-
-    # Getting parameters.
-    speech = ''
-    major = req['queryResult']['parameters'].get('major')
-    year = req['queryResult']['parameters'].get('year')
-
-    # Query creation.
-    print('Rudy (Heroku): Major details query created.')
-    details_query = make_details_query(major, year)
-
-    # Parsing query results into a speech format.
-    counter = 1
-    for result in details_query:
-        if result is None:
-            print('Rudy (Firebase): Major details query is empty.')
-            speech += 'There are no ' + year + ' courses for ' \
-                      + major + ' major. '
-        else:
-            print('Rudy (Firebase): Parsing query results.')
-            speech += 'The list of suggested courses \n for ' + year \
-                      + ' are: ' + (str(result).strip('[]')).strip('{}') + '. '
-        counter += 1
-
-    # Returning the speech contexts.
-    return speech
-
-
-# Get major details data source from Firebase based on the request parameters.
-def make_details_query(major, year):
-    print('Rudy (Firebase): Accessing to the database.')
-
-    # Making a list of query results for multiple year details for the major.
-    query_result = [db_majors.child(major).child(year).get()]
-
-    # Returning collected query results.
     return query_result
 
 
