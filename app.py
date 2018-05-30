@@ -108,6 +108,8 @@ def process_request(req):
         result = get_availability(req)
     elif req['queryResult'].get('action') == 'getJobDetails':
         result = get_job_details(req)
+    elif req['queryResult'].get('action') == 'getNextPaper':
+        result = get_next_paper_details(req)
 
     # Showing the generated response.
     print('Rudy: Generated response ->')
@@ -268,12 +270,12 @@ def get_failure_details(req):
     paper = req['queryResult']['parameters'].get('paper')
 
     # Query creation.
-    print('Rudy: failure details query created.')
+    print('Rudy: Failure details query created.')
     failure_details_query = make_failure_details_query(paper)
 
     # Parsing the query result into a speech format.
     if failure_details_query is None:
-        print('Rudy: failure details query is empty.')
+        print('Rudy: Failure details query is empty.')
         speech += 'There are basically no restrictions for paper: ' \
                   + paper + '. ' + 'You can still take whatever you want. '
     else:
@@ -384,6 +386,50 @@ def make_job_details_query(job):
 
 
 # -----------------------------END_REGION JOB_DETAILS------------------------------ #
+
+
+# ---------------------------REGION NEXT_PAPER_DETAILS----------------------------- #
+# Get next paper details for a paper. Therefore the client can find out what should
+# be taken after the current paper.
+def get_next_paper_details(req):
+    print('Rudy: Extracting required parameters.')
+
+    # Getting the request, and extracting parameters.
+    speech = ''
+    paper = req['queryResult']['parameters'].get('paper')
+    major = req['queryResult']['parameters'].get('major')
+
+    # Query creation.
+    print('Rudy: Next paper details query created.')
+    next_paper_details_query = make_next_paper_details_query(paper)
+
+    # Parsing the query result into a speech format.
+    if next_paper_details_query is None:
+        print('Rudy: Next paper details query is empty.')
+        speech += 'There are basically no suggested papers for paper ' \
+                  + paper + '. ' + 'You can still take other courses you want. '
+    else:
+        print('Rudy: Parsing query results.')
+        speech += 'Once you finish ' + paper + ', you can take ' \
+                  + str(next_paper_details_query).strip('[]') + ' for you next papers in' \
+                  + major + ' major.'
+
+    # Returning speed context.
+    return speech
+
+
+# Get next paper information from Firebase.
+def make_next_paper_details_query(paper):
+    print('Rudy: Accessing to the database.')
+
+    # Get restriction details for the paper.
+    query_result = [db_requisites.child(paper).child('restriction').get()]
+
+    # Returning collected result.
+    return query_result
+
+
+# -------------------------END_REGION NEXT_PAPER_DETAILS--------------------------- #
 
 
 # Initializing the app to server connection (hosting).
