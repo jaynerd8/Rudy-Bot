@@ -105,7 +105,7 @@ def process_request(req):
     elif req['queryResult'].get('action') == 'getMajorList':
         result = get_major_list()
     elif req['queryResult'].get('action') == 'getAvailability':
-        result = get_major_list()
+        result = get_availability()
 
     # Showing the generated response.
     print('Rudy: Generated response ->')
